@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام اتصالات - إدارة الموظفين وإدخال البيانات</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff6600, #ffffff);
+            min-height: 100vh;
+            direction: rtl;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: #ff6600;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(255, 102, 0, 0.3);
+        }
+
+        .logo {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .nav-bar {
+            background: #333;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .nav-bar.show {
+            display: block;
+        }
+
+        .nav-btn {
+            background: #ff6600;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: #e55a00;
+            transform: translateY(-2px);
+        }
+
+        .user-info {
+            float: left;
+            color: white;
+            font-size: 14px;
+        }
+
+        .login-form, .employee-panel, .admin-panel {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .login-form.show, .employee-panel.show, .admin-panel.show {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #ff6600;
+        }
+
+        .btn {
+            background: #ff6600;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background: #e55a00;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #555;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+        }
+
+        .btn-info:hover {
+            background: #138496;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .data-table th, .data-table td {
+            padding: 12px;
+            text-align: right;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .data-table th {
+            background: #ff6600;
+            color: white;
+            font-weight: bold;
+        }
+
+        .data-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .data-table tr:hover {
+            background: #e9ecef;
+        }
+
+        .status-pending {
+            color: #ffc107;
+            font-weight: bold;
+        }
+
+        .status-completed {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .status-missing {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .alert {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #ff6600;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .employee-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .employee-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .employee-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .employee-id {
+            background: #ff6600;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .request-number {
+            background: #17a2b8;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            background: #f8f9fa;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .file-upload-area:hover {
+            border-color: #ff6600;
+            background: #fff;
+        }
+
+        .file-upload-area.dragover {
+            border-color: #ff6600;
+            background: #fff5f5;
+        }
+
+        .file-list {
+            margin-top: 15px;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-icon {
+            font-size: 20px;
+        }
+
+        .employee-link {
+            background: #17a2b8;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+            font-weight: bold;
+        }
+
+        .employee-link:hover {
+            background: #138496;
+            color: white;
+            text-decoration: none;
+        }
+
+        .link-container {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            color: #aaa;
+            float: left;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .search-filter {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 15px;
+            align-items: end;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-row {
+                flex-direction: column;
+            }
+            
+            .filter-group {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🏢 نظام اتصالات</div>
+            <p>نظام إدارة الموظفين وإدخال البيانات</p>
+        </div>
+
+        <!-- Navigation Bar -->
+        <div class="nav-bar" id="navBar">
+            <button class="nav-btn" onclick="showEmployeePanel()">لوحة الموظف</button>
+            <button class="nav-btn" id="adminBtn" onclick="showAdminPanel()" style="display: none;">لوحة الإدارة</button>
+            <button class="nav-btn" onclick="showInstructions()">التعليمات</button>
+            <button class="nav-btn" onclick="logout()">تسجيل الخروج</button>
+            <div class="user-info" id="userInfo"></div>
+        </div>
+
+        <!-- Login Form -->
+        <div class="login-form show" id="loginForm">
+            <h2 style="color: #ff6600; margin-bottom: 30px; text-align: center;">تسجيل الدخول</h2>
+            <div class="form-group">
+                <label>اسم المستخدم:</label>
+                <input type="text" id="username" placeholder="أدخل اسم المستخدم">
+            </div>
+            <div class="form-group">
+                <label>كلمة المرور:</label>
+                <input type="password" id="password" placeholder="أدخل كلمة المرور">
+            </div>
+            <button class="btn" onclick="login()">دخول</button>
+            
+            <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                <h4 style="color: #333; margin-bottom: 15px;">بيانات الدخول الافتراضية:</h4>
+            </div>
+        </div>
+
+        <!-- Employee Panel -->
+        <div class="employee-panel" id="employeePanel">
+            <h2 style="color: #ff6600; margin-bottom: 30px;">لوحة الموظف - إدخال البيانات</h2>
+            
+            <!-- Employee Info Card -->
+            <div class="employee-card">
+                <div class="employee-header">
+                    <div class="employee-name" id="employeeName">اسم الموظف</div>
+                    <div class="employee-id" id="employeeId">رقم الموظف</div>
+                </div>
+                <div class="request-number" id="currentRequestNumber">رقم الطلب الحالي: ETI-0001</div>
+            </div>
+
+            <!-- Data Entry Form -->
+            <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1);">
+                <h3 style="color: #333; margin-bottom: 20px;">إدخال بيانات العميل</h3>
+                
+                <div class="form-group">
+                    <label>اسم العميل:</label>
+                    <input type="text" id="customerName" placeholder="أدخل اسم العميل الكامل">
+                </div>
+                
+                <div class="form-group">
+                    <label>الرقم القومي:</label>
+                    <input type="text" id="nationalId" placeholder="أدخل الرقم القومي (14 رقم)" maxlength="14">
+                </div>
+                
+                <div class="form-group">
+                    <label>رقم الهاتف:</label>
+                    <input type="text" id="phoneNumber" placeholder="أدخل رقم الهاتف">
+                </div>
+                
+                <div class="form-group">
+                    <label>العنوان:</label>
+                    <textarea id="address" placeholder="أدخل العنوان الكامل" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>نوع الخدمة:</label>
+                    <select id="serviceType">
+                        <option value="">اختر نوع الخدمة</option>
+                        <option value="خط جديد">خط جديد</option>
+                        <option value="تجديد خط">تجديد خط</option>
+                        <option value="تحديث">نقل ملكية</option>
+                        <option value="إلغاء خط">إلغاء خط</option>
+                        <option value="خدمة إنترنت">خدمة إنترنت</option>
+                        <option value="خدمة فاتورة">خدمة فاتورة</option>
+                        <option value="أخرى">أخرى</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>ملاحظات إضافية:</label>
+                    <textarea id="notes" placeholder="أي ملاحظات أو تفاصيل إضافية" rows="3"></textarea>
+                </div>
+                
+                <!-- File Upload Section -->
+                <div class="form-group">
+                    <label>رفع بطاقة الهوية والمستندات:</label>
+                    <div class="file-upload-area" id="fileUploadArea" ondrop="dropHandler(event)" ondragover="dragOverHandler(event)" ondragleave="dragLeaveHandler(event)">
+                        <p>📁 اسحب الملفات هنا أو انقر للاختيار</p>
+                        <input type="file" id="fileInput" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" style="display: none;" onchange="handleFileSelect(event)">
+                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('fileInput').click()">اختيار الملفات</button>
+                    </div>
+                    <div class="file-list" id="fileList"></div>
+                </div>
+                
+                <button class="btn" onclick="submitCustomerData()">حفظ البيانات</button>
+                <button class="btn btn-secondary" onclick="clearForm()">مسح النموذج</button>
+            </div>
+
+            <!-- Employee's Data History -->
+            <div style="margin-top: 30px;">
+                <h3 style="color: #333; margin-bottom: 20px;">سجل البيانات المدخلة</h3>
+                <button class="btn btn-info" onclick="showMyData()">عرض بياناتي</button>
+                <button class="btn btn-secondary" onclick="hideMyData()">إخفاء</button>
+                
+                <div id="myDataSection" style="display: none; margin-top: 20px;">
+                    <table class="data-table" id="myDataTable">
+                        <thead>
+                            <tr>
+                                <th>رقم الطلب</th>
+                                <th>اسم العميل</th>
+                                <th>الرقم القومي</th>
+                                <th>رقم الهاتف</th>
+                                <th>نوع الخدمة</th>
+                                <th>تاريخ الإدخال</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="myDataTableBody">
+                            <!-- Data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Panel -->
+        <div class="admin-panel" id="adminPanel">
+            <h2 style="color: #ff6600; margin-bottom: 30px;">لوحة الإدارة</h2>
+            
+            <!-- Statistics -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalEmployees">0</div>
+                    <div class="stat-label">إجمالي الموظفين</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalData">0</div>
+                    <div class="stat-label">إجمالي البيانات المدخلة</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="employeesWithoutData">0</div>
+                    <div class="stat-label">موظفين بدون بيانات</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="todayData">0</div>
+                    <div class="stat-label">بيانات اليوم</div>
+                </div>
+            </div>
+
+            <!-- Employee Management -->
+            <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); margin-bottom: 30px;">
+                <h3 style="color: #333; margin-bottom: 20px;">إدارة الموظفين</h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label>اسم المستخدم:</label>
+                        <input type="text" id="newUsername" placeholder="اسم المستخدم الجديد">
+                    </div>
+                    <div class="form-group">
+                        <label>كلمة المرور:</label>
+                        <input type="password" id="newPassword" placeholder="كلمة المرور">
+                    </div>
+                    <div class="form-group">
+                        <label>الاسم الكامل:</label>
+                        <input type="text" id="newFullName" placeholder="الاسم الكامل للموظف">
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="addNewEmployee()">إضافة موظف جديد</button>
+                
+                <!-- Employee Links Management -->
+                <div style="margin-top: 30px;">
+                    <h4 style="color: #333; margin-bottom: 15px;">روابط الموظفين للوصول للنظام</h4>
+                    <div class="link-container">
+                        <p style="margin-bottom: 10px; color: #666;">الرابط الأساسي للنظام:</p>
+                        <div style="background: white; padding: 10px; border-radius: 5px; border: 1px solid #ddd; margin-bottom: 15px;">
+                            <code id="systemLink">file:///c:/Users/omr/Downloads/etisalat-system/etisalat-system.html</code>
+                            <button class="btn btn-info" onclick="copySystemLink()" style="margin-right: 10px;">نسخ الرابط</button>
+                        </div>
+                        <p style="color: #666; font-size: 14px;">يمكن للموظفين استخدام هذا الرابط للوصول للنظام من أي جهاز كمبيوتر</p>
+                    </div>
+                </div>
+                
+                <table class="data-table" id="employeesTable" style="margin-top: 20px;">
+                    <thead>
+                        <tr>
+                            <th>اسم المستخدم</th>
+                            <th>الاسم الكامل</th>
+                            <th>رقم الموظف</th>
+                            <th>عدد البيانات المدخلة</th>
+                            <th>آخر نشاط</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employeesTableBody">
+                        <!-- Data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- All Data View -->
+            <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1);">
+                <h3 style="color: #333; margin-bottom: 20px;">جميع البيانات المدخلة</h3>
+                
+                <!-- Search and Filter -->
+                <div class="search-filter">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label>البحث:</label>
+                            <input type="text" id="searchInput" placeholder="البحث في البيانات..." onkeyup="filterAllData()">
+                        </div>
+                        <div class="filter-group">
+                            <label>فلترة بالموظف:</label>
+                            <select id="employeeFilter" onchange="filterAllData()">
+                                <option value="">جميع الموظفين</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>فلترة بنوع الخدمة:</label>
+                            <select id="serviceFilter" onchange="filterAllData()">
+                                <option value="">جميع الخدمات</option>
+                                <option value="خط جديد">خط جديد</option>
+                                <option value="تجديد خط">تجديد خط</option>
+                                <option value="نقل ملكية">نقل ملكية</option>
+                                <option value="إلغاء خط">إلغاء خط</option>
+                                <option value="خدمة إنترنت">خدمة إنترنت</option>
+                                <option value="خدمة فاتورة">خدمة فاتورة</option>
+                                <option value="أخرى">أخرى</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <table class="data-table" id="allDataTable">
+                    <thead>
+                        <tr>
+                            <th>رقم الطلب</th>
+                            <th>اسم العميل</th>
+                            <th>الرقم القومي</th>
+                            <th>رقم الهاتف</th>
+                            <th>نوع الخدمة</th>
+                            <th>الموظف</th>
+                            <th>تاريخ الإدخال</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="allDataTableBody">
+                        <!-- Data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Instructions Panel -->
+        <div id="instructionsPanel" style="display: none; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1);">
+            <h2 style="color: #ff6600; margin-bottom: 30px;">تعليمات استخدام النظام</h2>
+            
+            <div style="margin-bottom: 30px;">
+                <h3 style="color: #333; margin-bottom: 15px;">للموظفين:</h3>
+                <ul style="line-height: 1.8; color: #666;">
+                    <li>قم بتسجيل الدخول باستخدام اسم المستخدم وكلمة المرور المخصصة لك</li>
+                    <li>ستجد رقم طلبك الحالي في أعلى الصفحة</li>
+                    <li>أدخل بيانات العملاء بدقة في النموذج المخصص</li>
+                    <li>تأكد من صحة الرقم القومي (14 رقم)</li>
+                    <li>يمكنك عرض سجل البيانات التي أدخلتها من خلال "عرض بياناتي"</li>
+                    <li>لا يمكنك رؤية بيانات الموظفين الآخرين</li>
+                </ul>
+            </div>
+            
+            <div>
+                <h3 style="color: #333; margin-bottom: 15px;">للمديرين:</h3>
+                <ul style="line-height: 1.8; color: #666;">
+                    <li>يمكنك إضافة موظفين جدد وإدارة حساباتهم</li>
+                    <li>عرض إحصائيات شاملة عن النظام</li>
+                    <li>مراقبة أداء الموظفين وعدد البيانات المدخلة</li>
+                    <li>البحث والفلترة في جميع البيانات</li>
+                    <li>تتبع الموظفين الذين لم يدخلوا بيانات بعد</li>
+                    <li>كل موظف له رقم طلب فريد لتتبع عمله</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Data Details Modal -->
+        <div id="dataModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeDataModal()">&times;</span>
+                <h2 style="color: #ff6600; margin-bottom: 20px;">تفاصيل البيانات</h2>
+                <div id="dataDetails"></div>
+            </div>
+        </div>
+
+        <!-- Alert Messages -->
+        <div id="alertContainer"></div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentUser = null;
+        let customerData = JSON.parse(localStorage.getItem('etisalatCustomerData')) || [];
+        let requestCounter = parseInt(localStorage.getItem('etisalatRequestCounter') || '1');
+        
+        // User credentials - Load from localStorage or use defaults
+        let users = JSON.parse(localStorage.getItem('etisalatSystemUsers')) || {
+            'admin': { password: 'admin123', role: 'admin', name: 'المدير العام', employeeId: 'ADM001' },
+            'emp001': { password: 'emp123', role: 'employee', name: 'أحمد محمد', employeeId: 'EMP001' }
+        };
+        
+        // Save users to localStorage
+        function saveUsers() {
+            localStorage.setItem('etisalatSystemUsers', JSON.stringify(users));
+        }
+        
+        // Save customer data to localStorage
+        function saveCustomerData() {
+            localStorage.setItem('etisalatCustomerData', JSON.stringify(customerData));
+        }
+        
+        // Save request counter to localStorage
+        function saveRequestCounter() {
+            localStorage.setItem('etisalatRequestCounter', requestCounter.toString());
+        }
+
+        // Login function
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (users[username] && users[username].password === password) {
+                currentUser = {
+                    username: username,
+                    role: users[username].role,
+                    name: users[username].name,
+                    employeeId: users[username].employeeId
+                };
+                
+                document.getElementById('loginForm').classList.remove('show');
+                document.getElementById('navBar').classList.add('show');
+                document.getElementById('userInfo').innerHTML = `مرحباً ${currentUser.name} (${currentUser.role === 'admin' ? 'مدير' : 'موظف'})`;
+                
+                if (currentUser.role === 'admin') {
+                    document.getElementById('adminBtn').style.display = 'inline-block';
+                    showAdminPanel();
+                } else {
+                    showEmployeePanel();
+                }
+                
+                showAlert('تم تسجيل الدخول بنجاح', 'success');
+            } else {
+                showAlert('اسم المستخدم أو كلمة المرور غير صحيحة', 'error');
+            }
+        }
+
+        // Logout function
+        function logout() {
+            currentUser = null;
+            document.getElementById('loginForm').classList.add('show');
+            document.getElementById('navBar').classList.remove('show');
+            document.getElementById('employeePanel').classList.remove('show');
+            document.getElementById('adminPanel').classList.remove('show');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            clearForm();
+            showAlert('تم تسجيل الخروج بنجاح', 'success');
+        }
+
+        // Show employee panel
+        function showEmployeePanel() {
+            document.getElementById('employeePanel').classList.add('show');
+            document.getElementById('adminPanel').classList.remove('show');
+            document.getElementById('instructionsPanel').style.display = 'none';
+            
+            if (currentUser && currentUser.role === 'employee') {
+                document.getElementById('employeeName').textContent = currentUser.name;
+                document.getElementById('employeeId').textContent = currentUser.employeeId;
+                updateCurrentRequestNumber();
+            }
+        }
+
+        // Show admin panel
+        function showAdminPanel() {
+            if (currentUser && currentUser.role === 'admin') {
+                document.getElementById('adminPanel').classList.add('show');
+                document.getElementById('employeePanel').classList.remove('show');
+                document.getElementById('instructionsPanel').style.display = 'none';
+                loadAdminData();
+            }
+        }
+
+        // Show instructions panel
+        function showInstructions() {
+            document.getElementById('instructionsPanel').style.display = 'block';
+            document.getElementById('employeePanel').classList.remove('show');
+            document.getElementById('adminPanel').classList.remove('show');
+        }
+        
+        // Update current request number for employee
+        function updateCurrentRequestNumber() {
+            if (currentUser && currentUser.role === 'employee') {
+                const nextRequestNumber = `ETI-${String(requestCounter).padStart(4, '0')}`;
+                document.getElementById('currentRequestNumber').textContent = `رقم الطلب الحالي: ${nextRequestNumber}`;
+            }
+        }
+
+        // Submit customer data
+        function submitCustomerData() {
+            if (!currentUser || currentUser.role !== 'employee') {
+                showAlert('غير مصرح لك بإدخال البيانات', 'error');
+                return;
+            }
+            
+            const customerName = document.getElementById('customerName').value.trim();
+            const nationalId = document.getElementById('nationalId').value.trim();
+            const phoneNumber = document.getElementById('phoneNumber').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const serviceType = document.getElementById('serviceType').value;
+            const notes = document.getElementById('notes').value.trim();
+            
+            // Validation
+            if (!customerName || !nationalId || !phoneNumber || !address || !serviceType) {
+                showAlert('يرجى ملء جميع الحقول المطلوبة', 'error');
+                return;
+            }
+            
+            if (nationalId.length !== 14 || !/^\d+$/.test(nationalId)) {
+                showAlert('الرقم القومي يجب أن يكون 14 رقم', 'error');
+                return;
+            }
+            
+            // Check if national ID already exists
+            const existingData = customerData.find(data => data.nationalId === nationalId);
+            if (existingData) {
+                showAlert('هذا الرقم القومي موجود بالفعل في النظام', 'error');
+                return;
+            }
+            
+            // Create new data entry
+            const newData = {
+                id: Date.now(),
+                requestNumber: `ETI-${String(requestCounter).padStart(4, '0')}`,
+                customerName: customerName,
+                nationalId: nationalId,
+                phoneNumber: phoneNumber,
+                address: address,
+                serviceType: serviceType,
+                notes: notes,
+                employeeUsername: currentUser.username,
+                employeeName: currentUser.name,
+                employeeId: currentUser.employeeId,
+                date: new Date().toLocaleDateString('ar-EG'),
+                time: new Date().toLocaleTimeString('ar-EG'),
+                status: 'مكتمل'
+            };
+            
+            customerData.push(newData);
+            requestCounter++;
+            
+            saveCustomerData();
+            saveRequestCounter();
+            
+            showAlert('تم حفظ البيانات بنجاح', 'success');
+            clearForm();
+            updateCurrentRequestNumber();
+        }
+
+        // Clear form
+        function clearForm() {
+            document.getElementById('customerName').value = '';
+            document.getElementById('nationalId').value = '';
+            document.getElementById('phoneNumber').value = '';
+            document.getElementById('address').value = '';
+            document.getElementById('serviceType').value = '';
+            document.getElementById('notes').value = '';
+        }
+
+        // Show employee's own data
+        function showMyData() {
+            if (!currentUser || currentUser.role !== 'employee') return;
+            
+            const myData = customerData.filter(data => data.employeeUsername === currentUser.username);
+            const tableBody = document.getElementById('myDataTableBody');
+            tableBody.innerHTML = '';
+            
+            myData.forEach(data => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${data.requestNumber}</td>
+                    <td>${data.customerName}</td>
+                    <td>${data.nationalId}</td>
+                    <td>${data.phoneNumber}</td>
+                    <td>${data.serviceType}</td>
+                    <td>${data.date}</td>
+                    <td><span class="status-completed">${data.status}</span></td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            document.getElementById('myDataSection').style.display = 'block';
+        }
+
+        // Hide employee's data section
+        function hideMyData() {
+            document.getElementById('myDataSection').style.display = 'none';
+        }
+
+        // Add new employee (Admin only)
+        function addNewEmployee() {
+            if (!currentUser || currentUser.role !== 'admin') {
+                showAlert('غير مصرح لك بإضافة موظفين', 'error');
+                return;
+            }
+            
+            const username = document.getElementById('newUsername').value.trim();
+            const password = document.getElementById('newPassword').value.trim();
+            const fullName = document.getElementById('newFullName').value.trim();
+            
+            if (!username || !password || !fullName) {
+                showAlert('يرجى ملء جميع الحقول', 'error');
+                return;
+            }
+            
+            if (users[username]) {
+                showAlert('اسم المستخدم موجود بالفعل', 'error');
+                return;
+            }
+            
+            if (username.length < 3) {
+                showAlert('اسم المستخدم يجب أن يكون 3 أحرف على الأقل', 'error');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showAlert('كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
+                return;
+            }
+            
+            // Generate employee ID
+            const employeeCount = Object.keys(users).filter(u => users[u].role === 'employee').length;
+            const employeeId = `EMP${String(employeeCount + 1).padStart(3, '0')}`;
+            
+            // Add new user
+            users[username] = {
+                password: password,
+                role: 'employee',
+                name: fullName,
+                employeeId: employeeId
+            };
+            
+            saveUsers();
+            loadAdminData();
+            
+            // Clear form
+            document.getElementById('newUsername').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('newFullName').value = '';
+            
+            showAlert('تم إضافة الموظف بنجاح', 'success');
+        }
+
+        // Load admin data
+        function loadAdminData() {
+            if (!currentUser || currentUser.role !== 'admin') return;
+            
+            // Update statistics
+            const employees = Object.keys(users).filter(u => users[u].role === 'employee');
+            const totalEmployees = employees.length;
+            const totalData = customerData.length;
+            const employeesWithData = [...new Set(customerData.map(data => data.employeeUsername))].length;
+            const employeesWithoutData = totalEmployees - employeesWithData;
+            const today = new Date().toLocaleDateString('ar-EG');
+            const todayData = customerData.filter(data => data.date === today).length;
+            
+            document.getElementById('totalEmployees').textContent = totalEmployees;
+            document.getElementById('totalData').textContent = totalData;
+            document.getElementById('employeesWithoutData').textContent = employeesWithoutData;
+            document.getElementById('todayData').textContent = todayData;
+            
+            // Load employees table
+            loadEmployeesTable();
+            
+            // Load all data table
+            loadAllDataTable();
+            
+            // Update employee filter
+            updateEmployeeFilter();
+        }
+
+        // Load employees table
+        function loadEmployeesTable() {
+            const tbody = document.getElementById('employeesTableBody');
+            tbody.innerHTML = '';
+            
+            Object.keys(users).forEach(username => {
+                const user = users[username];
+                if (user.role === 'employee') {
+                    const employeeData = customerData.filter(data => data.employeeUsername === username);
+                    const dataCount = employeeData.length;
+                    const lastActivity = employeeData.length > 0 ? 
+                        employeeData[employeeData.length - 1].date : 'لم يدخل بيانات بعد';
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${username}</td>
+                        <td>${user.name}</td>
+                        <td>${user.employeeId}</td>
+                        <td>${dataCount}</td>
+                        <td>${lastActivity}</td>
+                        <td>
+                            <button onclick="editEmployee('${username}')" class="btn" style="background: #007bff; color: white; padding: 5px 10px; font-size: 12px; margin-left: 5px;">تعديل</button>
+                            <button onclick="deleteEmployee('${username}')" class="btn btn-danger" style="background: #dc3545; padding: 5px 10px; font-size: 12px;">حذف</button>
+                        </td>
+                    `;
+                    
+                    // Highlight employees without data
+                    if (dataCount === 0) {
+                        row.style.backgroundColor = '#fff3cd';
+                    }
+                    
+                    tbody.appendChild(row);
+                }
+            });
+        }
+
+        // Load all data table
+        function loadAllDataTable() {
+            const tbody = document.getElementById('allDataTableBody');
+            tbody.innerHTML = '';
+            
+            customerData.forEach(data => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${data.requestNumber}</td>
+                    <td>${data.customerName}</td>
+                    <td>${data.nationalId}</td>
+                    <td>${data.phoneNumber}</td>
+                    <td>${data.serviceType}</td>
+                    <td>${data.employeeName} (${data.employeeId})</td>
+                    <td>${data.date}</td>
+                    <td>
+                        <button onclick="viewDataDetails(${data.id})" class="btn btn-info" style="padding: 5px 10px; font-size: 12px;">التفاصيل</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Update employee filter
+        function updateEmployeeFilter() {
+            const select = document.getElementById('employeeFilter');
+            select.innerHTML = '<option value="">جميع الموظفين</option>';
+            
+            Object.keys(users).forEach(username => {
+                const user = users[username];
+                if (user.role === 'employee') {
+                    const option = document.createElement('option');
+                    option.value = username;
+                    option.textContent = `${user.name} (${user.employeeId})`;
+                    select.appendChild(option);
+                }
+            });
+        }
+
+        // Filter all data
+        function filterAllData() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const employeeFilter = document.getElementById('employeeFilter').value;
+            const serviceFilter = document.getElementById('serviceFilter').value;
+            
+            const filteredData = customerData.filter(data => {
+                const matchesSearch = data.customerName.toLowerCase().includes(searchTerm) || 
+                                    data.nationalId.includes(searchTerm) ||
+                                    data.requestNumber.toLowerCase().includes(searchTerm);
+                const matchesEmployee = !employeeFilter || data.employeeUsername === employeeFilter;
+                const matchesService = !serviceFilter || data.serviceType === serviceFilter;
+                
+                return matchesSearch && matchesEmployee && matchesService;
+            });
+            
+            const tbody = document.getElementById('allDataTableBody');
+            tbody.innerHTML = '';
+            
+            filteredData.forEach(data => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${data.requestNumber}</td>
+                    <td>${data.customerName}</td>
+                    <td>${data.nationalId}</td>
+                    <td>${data.phoneNumber}</td>
+                    <td>${data.serviceType}</td>
+                    <td>${data.employeeName} (${data.employeeId})</td>
+                    <td>${data.date}</td>
+                    <td>
+                        <button onclick="viewDataDetails(${data.id})" class="btn btn-info" style="padding: 5px 10px; font-size: 12px;">التفاصيل</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Edit employee
+        function editEmployee(username) {
+            const user = users[username];
+            const newName = prompt('الاسم الكامل الجديد:', user.name);
+            const newPassword = prompt('كلمة المرور الجديدة (اتركها فارغة للاحتفاظ بالحالية):');
+            
+            if (newName !== null && newName.trim() !== '') {
+                users[username].name = newName.trim();
+                
+                if (newPassword && newPassword.trim() !== '') {
+                    if (newPassword.length < 6) {
+                        showAlert('كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
+                        return;
+                    }
+                    users[username].password = newPassword.trim();
+                }
+                
+                saveUsers();
+                loadAdminData();
+                showAlert('تم تعديل بيانات الموظف بنجاح', 'success');
+            }
+        }
+
+        // Delete employee
+        function deleteEmployee(username) {
+            if (confirm(`هل أنت متأكد من حذف الموظف: ${users[username].name}؟\nسيتم حذف جميع البيانات المرتبطة به.`)) {
+                // Remove employee data
+                customerData = customerData.filter(data => data.employeeUsername !== username);
+                saveCustomerData();
+                
+                // Remove user
+                delete users[username];
+                saveUsers();
+                
+                loadAdminData();
+                showAlert('تم حذف الموظف وبياناته بنجاح', 'success');
+            }
+        }
+
+        // View data details
+        function viewDataDetails(dataId) {
+            const data = customerData.find(d => d.id === dataId);
+            if (data) {
+                const details = `
+                    <div style="line-height: 1.8;">
+                        <p><strong>رقم الطلب:</strong> ${data.requestNumber}</p>
+                        <p><strong>اسم العميل:</strong> ${data.customerName}</p>
+                        <p><strong>الرقم القومي:</strong> ${data.nationalId}</p>
+                        <p><strong>رقم الهاتف:</strong> ${data.phoneNumber}</p>
+                        <p><strong>العنوان:</strong> ${data.address}</p>
+                        <p><strong>نوع الخدمة:</strong> ${data.serviceType}</p>
+                        <p><strong>الملاحظات:</strong> ${data.notes || 'لا توجد'}</p>
+                        <p><strong>الموظف المسؤول:</strong> ${data.employeeName} (${data.employeeId})</p>
+                        <p><strong>تاريخ الإدخال:</strong> ${data.date}</p>
+                        <p><strong>وقت الإدخال:</strong> ${data.time}</p>
+                        <p><strong>الحالة:</strong> <span class="status-completed">${data.status}</span></p>
+                    </div>
+                `;
+                
+                document.getElementById('dataDetails').innerHTML = details;
+                document.getElementById('dataModal').style.display = 'block';
+            }
+        }
+
+        // Close data modal
+        function closeDataModal() {
+            document.getElementById('dataModal').style.display = 'none';
+        }
+
+        // Show alert messages
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type === 'success' ? 'success' : 'error'}`;
+            alert.textContent = message;
+            
+            alertContainer.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // Validate national ID input
+        document.getElementById('nationalId').addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        });
+
+        // Validate phone number input
+        document.getElementById('phoneNumber').addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/[^0-9+]/g, '');
+        });
+
+        // Enter key login
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && document.getElementById('loginForm').classList.contains('show')) {
+                login();
+            }
+        });
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('dataModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+        
+        // Initialize default data
+        function initializeDefaultData() {
+            // Add some sample data if none exists
+            if (customerData.length === 0) {
+                const sampleData = [
+                    {
+                        id: 1,
+                        requestNumber: 'ETI-0001',
+                        customerName: 'محمد أحمد علي',
+                        nationalId: '12345678901234',
+                        phoneNumber: '01234567890',
+                        address: 'القاهرة، مصر الجديدة، شارع الحجاز',
+                        serviceType: 'خط جديد',
+                        notes: 'عميل جديد',
+                        employeeUsername: 'emp001',
+                        employeeName: 'أحمد محمد',
+                        employeeId: 'EMP001',
+                        date: new Date().toLocaleDateString('ar-EG'),
+                        time: new Date().toLocaleTimeString('ar-EG'),
+                        status: 'مكتمل'
+                    }
+                ];
+                
+                customerData = sampleData;
+                requestCounter = 2;
+                saveCustomerData();
+                saveRequestCounter();
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDefaultData();
+        });
+    </script>
+</body>
+</html>
